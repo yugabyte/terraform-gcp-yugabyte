@@ -1,3 +1,7 @@
+variable "cluster_name" {
+  description = "The name for the cluster (universe) being created."
+  type        = "string"
+}
 variable "use_public_ip_for_ssh" {
   description = "Flag to control use of public or private ips for ssh."
   default = "true"
@@ -66,5 +70,10 @@ variable "region_name" {
 variable "disk_size" {
   description = "Disk size for YugaByte DB nodes"
   default     = "50"
+  type        = "string"
+}
+variable "prefix" {
+  description = "Prefix prepended to all resources created."
+  default     = "yugabyte-"
   type        = "string"
 }

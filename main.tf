@@ -8,30 +8,30 @@ data "google_compute_zones" "available" {
 }
 
 resource "google_compute_firewall" "YugaByte-Firewall" {
-  name = "${var.vpc_firewall}-yugabyte-firewall"
+  name = "${var.vpc_firewall}-${var.prefix}${var.cluster_name}-firewall"
   network = "${var.vpc_network}"
   allow {
       protocol = "tcp"
       ports = ["9000","7000","6379","9042","5433","22"]
   }
-  target_tags = ["yugabyte"]
+  target_tags = ["${var.prefix}${var.cluster_name}"]
 }
 resource "google_compute_firewall" "YugaByte-Intra-Firewall" {
-  name = "${var.vpc_firewall}-yugabyte-intra-firewall"
+  name = "${var.vpc_firewall}-${var.prefix}${var.cluster_name}-intra-firewall"
   network = "${var.vpc_network}"
   allow {
       protocol = "tcp"
       ports = ["7100", "9100"]
   }
-  target_tags = ["yugabyte"]
+  target_tags = ["${var.prefix}${var.cluster_name}"]
 }
 
 resource "google_compute_instance" "yugabyte_node" {
     count = "${var.node_count}"
-    name = "yugabute-node-${count.index}"
+    name = "${var.prefix}${var.cluster_name}-n${format("%d", count.index + 1)}"
     machine_type = "${var.node_type}"
     zone = "${data.google_compute_zones.available.names[count.index]}"
-    tags=["yugabyte"]
+    tags=["${var.prefix}${var.cluster_name}"]
     
     boot_disk{
         initialize_params {
@@ -51,7 +51,7 @@ resource "google_compute_instance" "yugabyte_node" {
     }
 
     provisioner "file" {
-        source = "${path.module}/scripts/install_software.sh"
+        source = "${path.module}/utilities/scripts/install_software.sh"
         destination = "/home/${var.ssh_user}/install_software.sh"
         connection {
             type = "ssh"
@@ -61,7 +61,7 @@ resource "google_compute_instance" "yugabyte_node" {
     }
 
     provisioner "file" {
-        source = "${path.module}/scripts/create_universe.sh"
+        source = "${path.module}/utilities/scripts/create_universe.sh"
         destination ="/home/${var.ssh_user}/create_universe.sh"
         connection {
             type = "ssh"
