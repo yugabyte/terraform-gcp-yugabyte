@@ -4,5 +4,5 @@ output "ui" {
 }
 output "ssh_key" {
   sensitive = false
-  value     = "${var.ssh_key_path}"
+  value     = "${var.ssh_private_key}"
 }

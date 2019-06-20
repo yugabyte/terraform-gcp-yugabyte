@@ -40,7 +40,7 @@ resource "google_compute_instance" "yugabyte_node" {
         }
     }
     metadata { 
-        sshKeys = "${var.ssh_user}:${file(var.ssh_pub_key)}"
+        sshKeys = "${var.ssh_user}:${file(var.ssh_public_key)}"
     }
 
     network_interface{
@@ -56,7 +56,7 @@ resource "google_compute_instance" "yugabyte_node" {
         connection {
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_key_path)}"
+            private_key = "${file(var.ssh_private_key)}"
         }
     }
 
@@ -66,7 +66,7 @@ resource "google_compute_instance" "yugabyte_node" {
         connection {
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_key_path)}"
+            private_key = "${file(var.ssh_private_key)}"
         }
     }
     provisioner "file" {
@@ -75,7 +75,7 @@ resource "google_compute_instance" "yugabyte_node" {
         connection {
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_key_path)}"
+            private_key = "${file(var.ssh_private_key)}"
         }
     }
     provisioner "file" {
@@ -84,7 +84,7 @@ resource "google_compute_instance" "yugabyte_node" {
         connection {
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_key_path)}"
+            private_key = "${file(var.ssh_private_key)}"
         }
     }
     provisioner "remote-exec" {
@@ -98,7 +98,7 @@ resource "google_compute_instance" "yugabyte_node" {
         connection {
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_key_path)}"
+            private_key = "${file(var.ssh_private_key)}"
         }
     }
 }
@@ -114,7 +114,7 @@ resource "null_resource" "create_yugabyte_universe" {
   depends_on = ["google_compute_instance.yugabyte_node"]
 
   provisioner "local-exec" {
-      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${var.ssh_key_path}"
+      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${var.ssh_private_key}"
   }
 }
 
