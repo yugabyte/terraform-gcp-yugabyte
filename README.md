@@ -13,7 +13,7 @@ A Terraform module to deploy and run YugaByte on Google Cloud.
     project = "yugabyte-pcf"
   }
   ```
-  Note :- You can get credentials file by following steps given [here](https://cloud.google.com/docs/authentication/getting-started#auth-cloud-implicit-python)
+  Note :- You can get credentials file by following steps given [here](https://cloud.google.com/docs/authentication/getting-started)
 
 * Now add the yugabyte terraform module to your file 
   ```
