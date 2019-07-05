@@ -30,7 +30,7 @@ resource "google_compute_instance" "yugabyte_node" {
     count = "${var.node_count}"
     name = "${var.prefix}${var.cluster_name}-n${format("%d", count.index + 1)}"
     machine_type = "${var.node_type}"
-    zone = "${data.google_compute_zones.available.names[count.index]}"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
     tags=["${var.prefix}${var.cluster_name}"]
     
     boot_disk{
