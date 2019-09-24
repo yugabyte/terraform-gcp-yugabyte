@@ -39,7 +39,7 @@ resource "google_compute_instance" "yugabyte_node" {
             size = "${var.disk_size}"
         }
     }
-    metadata { 
+    metadata = { 
         sshKeys = "${var.ssh_user}:${file(var.ssh_public_key)}"
     }
 
@@ -54,6 +54,7 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/install_software.sh"
         destination = "/home/${var.ssh_user}/install_software.sh"
         connection {
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
             private_key = "${file(var.ssh_private_key)}"
@@ -64,6 +65,7 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/create_universe.sh"
         destination ="/home/${var.ssh_user}/create_universe.sh"
         connection {
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
             private_key = "${file(var.ssh_private_key)}"
@@ -73,6 +75,7 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/start_master.sh"
         destination ="/home/${var.ssh_user}/start_master.sh"
         connection {
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
             private_key = "${file(var.ssh_private_key)}"
@@ -82,6 +85,7 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/start_tserver.sh"
         destination ="/home/${var.ssh_user}/start_tserver.sh"
         connection {
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
             private_key = "${file(var.ssh_private_key)}"
@@ -93,9 +97,10 @@ resource "google_compute_instance" "yugabyte_node" {
             "chmod +x /home/${var.ssh_user}/create_universe.sh",
             "chmod +x /home/${var.ssh_user}/start_tserver.sh",
             "chmod +x /home/${var.ssh_user}/start_master.sh",
-            "/home/${var.ssh_user}/install_software.sh '${var.yb_edition}' '${var.yb_version}' '${var.yb_download_url}'"
+            "/home/${var.ssh_user}/install_software.sh '${var.yb_version}'"
         ]
         connection {
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
             private_key = "${file(var.ssh_private_key)}"
