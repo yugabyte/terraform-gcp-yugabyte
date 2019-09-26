@@ -1,3 +1,11 @@
+variable "project_id" {
+  type = "string"
+}
+
+variable "credentials" {
+  type = "string"
+}
+
 variable "cluster_name" {
   description = "The name for the cluster (universe) being created."
   type        = "string"

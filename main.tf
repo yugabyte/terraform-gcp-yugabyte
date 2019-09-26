@@ -1,4 +1,13 @@
 
+terraform {
+    required_version = ">= 0.12"
+}
+
+provider "google" {
+   credentials = "${file(var.credentials)}"
+   project = var.project_id
+}
+
 data "google_compute_image" "YugaByte_DB_Image" {
   family  = "centos-6"
   project = "centos-cloud"
