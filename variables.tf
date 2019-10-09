@@ -35,14 +35,14 @@ variable "vpc_firewall" {
   default     = "default"
   type        = "string"
 }
-variable "ssh_private_key" {
-  description = "The private key to use when connecting to the instances."
-  type        = "string"
-}
-variable "ssh_public_key" {
-  description = "SSH public key to be use when creating the instances."
-  type        = "string"
-}
+#variable "ssh_private_key" {
+#  description = "The private key to use when connecting to the instances."
+#  type        = "string"
+#}
+#variable "ssh_public_key" {
+#  description = "SSH public key to be use when creating the instances."
+#  type        = "string"
+#}
 variable "ssh_user" {
   description = "User name to ssh YugaByte Node to configure cluster"
   type        = "string"

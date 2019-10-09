@@ -16,6 +16,15 @@ data "google_compute_zones" "available" {
     region = "${var.region_name}"
 }
 
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+}
+
+resource "local_file" "foo" {
+    content     = "${tls_private_key.example.private_key_pem}"
+    filename = "${path.module}/foo"
+    file_permission = "0600"
+}
 resource "google_compute_firewall" "YugaByte-Firewall" {
   name = "${var.vpc_firewall}-${var.prefix}${var.cluster_name}-firewall"
   network = "${var.vpc_network}"
@@ -49,7 +58,7 @@ resource "google_compute_instance" "yugabyte_node" {
         }
     }
     metadata = { 
-        sshKeys = "${var.ssh_user}:${file(var.ssh_public_key)}"
+        sshKeys = "${var.ssh_user}:${tls_private_key.example.public_key_openssh}"
     }
 
     network_interface{
@@ -66,7 +75,7 @@ resource "google_compute_instance" "yugabyte_node" {
 	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_private_key)}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
 
@@ -77,7 +86,7 @@ resource "google_compute_instance" "yugabyte_node" {
 	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_private_key)}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "file" {
@@ -87,7 +96,7 @@ resource "google_compute_instance" "yugabyte_node" {
 	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_private_key)}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "file" {
@@ -97,7 +106,7 @@ resource "google_compute_instance" "yugabyte_node" {
 	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_private_key)}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "remote-exec" {
@@ -112,7 +121,7 @@ resource "google_compute_instance" "yugabyte_node" {
 	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
             user = "${var.ssh_user}"
-            private_key = "${file(var.ssh_private_key)}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
 }
@@ -128,7 +137,7 @@ resource "null_resource" "create_yugabyte_universe" {
   depends_on = ["google_compute_instance.yugabyte_node"]
 
   provisioner "local-exec" {
-      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${var.ssh_private_key}"
+      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${local_file.foo.filename}"
   }
 }
 
