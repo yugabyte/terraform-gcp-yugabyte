@@ -26,9 +26,12 @@ jobs:
       run: |
         echo `ls -l`
         export GO111MODULE=on
+        cd ./test
+        echo `ls -l`
         go mod download
 
     - name: Build
       run: |
+        cd ./test
         echo `pwd`
         go test -v -timeout 90m  yugabyte_test.go
