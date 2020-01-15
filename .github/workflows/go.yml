@@ -24,7 +24,8 @@ jobs:
       
     - name: Get dependencies
       run: |
-        go get -v -t -d ./...
+        echo `pwd`
+        go get -v -t -d ./
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
@@ -32,5 +33,7 @@ jobs:
       working-directory: ./test
 
     - name: Build
-      run: go test -v -timeout 90m  yugabyte_test.go
+      run: |
+        echo `pwd`
+        go test -v -timeout 90m  yugabyte_test.go
       working-directory: ./test
