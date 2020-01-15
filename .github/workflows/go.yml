@@ -24,13 +24,11 @@ jobs:
       
     - name: Get dependencies
       run: |
-        echo `pwd`
+        echo `ls -l`
         export GO111MODULE=on
         go mod download
-      working-directory: ./test
 
     - name: Build
       run: |
         echo `pwd`
         go test -v -timeout 90m  yugabyte_test.go
-      working-directory: ./test
