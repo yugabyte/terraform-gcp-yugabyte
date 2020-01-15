@@ -24,10 +24,8 @@ jobs:
       
     - name: Get dependencies
       run: |
-        echo `ls -l`
-        export GO111MODULE=on
         cd ./test
-        echo `ls -l`
+        go mod init
         go mod download
 
     - name: Build
