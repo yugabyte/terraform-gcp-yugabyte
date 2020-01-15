@@ -25,8 +25,7 @@ jobs:
     - name: Get dependencies
       run: |
         echo `pwd`
-        export GO111MODULE=off
-        go get -v -t -d ./
+        export GO111MODULE=on
         if [ -f Gopkg.toml ]; then
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
