@@ -20,9 +20,7 @@ jobs:
         version: 0.12.13
 
     - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
-      with:
-        ref: test-plan
+      uses: actions/checkout@v1
       
     - name: Get dependencies
       run: |
