@@ -39,9 +39,6 @@ jobs:
     - name: Build
       run: |
         cd ./test
-        echo "$gcp" 
-        echo "$gcp" | base64 --decode > ${HOME}/key.json
-        cat ${HOME}/key.json
-        export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/key.json"
+        gcloud auth application-default login
         go test -v -timeout 90m  yugabyte_test.go
         rm ${HOME/key.json}
