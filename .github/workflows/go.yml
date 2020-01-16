@@ -13,7 +13,7 @@ jobs:
         version: '275.0.0'
         service_account_email: ${{ secrets.GCP_SA_EMAIL }}
         service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-    - run: gcloud info 
+    - run: gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
 
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
@@ -39,6 +39,4 @@ jobs:
     - name: Build
       run: |
         cd ./test
-        gcloud auth application-default login
         go test -v -timeout 90m  yugabyte_test.go
-        rm ${HOME/key.json}
