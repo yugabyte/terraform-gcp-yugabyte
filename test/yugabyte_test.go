@@ -75,8 +75,8 @@ func TestYugaByteGcpTerraform(t *testing.T) {
 
 func configureTerraformOptions(t *testing.T, yugabyteDir string) *terraform.Options {
 
-	projectID = "<Your-GCP-Project-ID>"
-	credentials := "<Your-GCP-Credentials>"
+	projectID = os.Getenv("GOOGLE_PROJECT_ID")
+	credentials := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
 	sshUser = strings.ToLower(randomdata.FirstName(randomdata.Male))
 	regionName := gcp.GetRandomRegion(t, projectID, nil, nil)
 	clusterName := strings.ToLower(randomdata.FirstName(randomdata.Male))
