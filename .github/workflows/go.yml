@@ -5,16 +5,18 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    
+        
     steps:
     - name: Google Cloud Platform (GCP) CLI - gcloud
-      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      uses: actions-hub/gcloud@275.0.0
+      env:
+        # Project id
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+        # GCP authorization credentials
+        APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
       with:
-        version: '275.0.0'
-        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
-        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-    - run: gcloud auth activate-service-account ${{ secrets.GCP_SA_EMAIL }} --key-file=${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
-
+          args: auth list
+    
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
       with:
