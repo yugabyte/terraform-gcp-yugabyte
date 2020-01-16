@@ -7,6 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GCP_KEY: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+      GOOGLE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         
     steps:
     - name: Google Cloud Platform (GCP) CLI - gcloud
@@ -37,7 +38,6 @@ jobs:
     - name: Get dependencies
       run: |
         cd ./test
-        go mod init test
         go mod download
 
     - name: Build
