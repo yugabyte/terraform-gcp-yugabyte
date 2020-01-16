@@ -10,9 +10,9 @@ jobs:
       uses: actions-hub/gcloud@272.0.0
       with:
         # Project id
-        PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
+        PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         # GCP authorization credentials
-        APPLICATION_CREDENTIALS: ${{secrets.GCP_CREDENTIALS}}
+        APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
     - run: gcloud info 
 
     - name: Set up Go 1.13
