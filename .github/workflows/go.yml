@@ -39,7 +39,9 @@ jobs:
     - name: Build
       run: |
         cd ./test
-        echo "$GOOGLE_APPLICATION_CREDENTIALS" | base64 --decode > ${HOME}/key.json
+        echo "$gcp" 
+        echo "$gcp" | base64 --decode > ${HOME}/key.json
+        cat ${HOME}/key.json
         export GOOGLE_APPLICATION_CREDENTIALS="${HOME}/key.json"
         go test -v -timeout 90m  yugabyte_test.go
         rm ${HOME/key.json}
