@@ -7,10 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Google Cloud Platform (GCP) CLI - gcloud
-      uses: actions-hub/gcloud@276.0.0
+      uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
       with:
-        PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-        APPLICATION_CREDENTIALS: vaibhav
+        version: '275.0.0'
+        service_account_email: ${{ secrets.GCP_SA_EMAIL }}
+        service_account_key: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
     - run: gcloud info 
 
     - name: Set up Go 1.13
