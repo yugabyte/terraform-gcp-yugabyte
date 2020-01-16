@@ -5,6 +5,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      GCP_KEY: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
         
     steps:
     - name: Google Cloud Platform (GCP) CLI - gcloud
@@ -40,5 +42,7 @@ jobs:
 
     - name: Build
       run: |
+        echo "$GCP_KEY" | base64 -d > /tmp/account.json
+        export GOOGLE_APPLICATION_CREDENTIALS="/tmp/account.json"
         cd ./test
         go test -v -timeout 90m  yugabyte_test.go
