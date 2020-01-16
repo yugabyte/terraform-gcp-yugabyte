@@ -6,6 +6,14 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+    - name: Google Cloud Platform (GCP) CLI - gcloud
+      uses: actions-hub/gcloud@272.0.0
+      with:
+        # Project id
+        PROJECT_ID: ${{secrets.GCP_PROJECT_ID}}
+        # GCP authorization credentials
+        APPLICATION_CREDENTIALS: ${{secrets.GCP_CREDENTIALS}}
+    - run: gcloud info 
 
     - name: Set up Go 1.13
       uses: actions/setup-go@v1
