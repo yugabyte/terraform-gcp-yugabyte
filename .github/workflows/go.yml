@@ -9,10 +9,8 @@ jobs:
     - name: Google Cloud Platform (GCP) CLI - gcloud
       uses: actions-hub/gcloud@276.0.0
       with:
-        # Project id
         PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-        # GCP authorization credentials
-        APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+        APPLICATION_CREDENTIALS: vaibhav
     - run: gcloud info 
 
     - name: Set up Go 1.13
