@@ -2,30 +2,23 @@
 A Terraform module to deploy and run YugaByte on Google Cloud.
 
 ## Config
-* First create a terraform file with provider details 
-  ```
-  provider "google" 
-  { 
-    # Provide your GCP Creadentilals 
-    credentials = "${file("yugabyte-pcf-bc8114281026.json")}"
-
-    # The name of your GCP project 
-    project = "yugabyte-pcf"
-  }
-  ```
-  Note :- You can get credentials file by following steps given [here](https://cloud.google.com/docs/authentication/getting-started)
-
-* Now add the yugabyte terraform module to your file 
+* First create a terraform file and add the yugabyte terraform module to your file 
   ```
   module "yugabyte-db-cluster" {
   source = "github.com/YugaByte/terraform-gcp-yugabyte.git"
 
+  # Your GCP project id 
+  project_id = "<YOUR-GCP-PROJECT-ID>"
+
+  # Your GCP credentials file path  
+  credentials = "<PATH-OF-YOUR-GCP-CREDENTIAL-FILE>"
+  
+  Note:- You can get credentials file by following steps given [here](https://cloud.google.com/docs/authentication/getting-started)
+
   # The name of the cluster to be created.
   cluster_name = "test-yugabyte"
 
-   # key pair.
-  ssh_private_key = "SSH_PRIVATE_KEY_HERE"
-  ssh_public_key = "SSH_PUBLIC_KEY_HERE"
+  # User name for ssh connection
   ssh_user = "SSH_USER_NAME_HERE"
 
   # The region name where the nodes should be spawned.
@@ -38,7 +31,7 @@ A Terraform module to deploy and run YugaByte on Google Cloud.
   node_count = "3"
   }
   ```
-
+ 
 
 ## Usage
 
@@ -81,3 +74,36 @@ To destroy what we just created, you can run the following command.
 $ terraform destroy
 ```
 `Note:- To make any changes in the created cluster you will need the terraform state files. So don't delete state files of Terraform.`
+
+## Test 
+
+### Configurations
+
+#### Prerequisites
+
+- [Terraform **(~> 0.12.5)**](https://www.terraform.io/downloads.html)
+- [Golang **(~> 1.12.10)**](https://golang.org/dl/)
+- [dep **(~> 0.5.4)**](https://github.com/golang/dep)
+
+#### Environment setup
+
+* First install `dep` dependency management tool for Go.
+    ```sh
+    $ curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+    ```  
+* Change your working directory to the `test` folder.
+* Run `dep` command to get required modules
+    ```sh
+    $ dep ensure
+    ```
+
+#### Run test
+
+Then simply run it in the local shell:
+
+```sh
+$ go test -v -timeout 15m  yugabyte_test.go
+```
+* Note that go has a default test timeout of 10 minutes. With infrastructure testing, your tests will surpass the 10 minutes very easily. To extend the timeout, you can pass in the -timeout option, which takes a go duration string (e.g 10m for 10 minutes or 1h for 1 hour). In the above command, we use the -timeout option to override to a 90 minute timeout.
+* When you hit the timeout, Go automatically exits the test, skipping all cleanup routines. This is problematic for infrastructure testing because it will skip your deferred infrastructure cleanup steps (i.e terraform destroy), leaving behind the infrastructure that was spun up. So it is important to use a longer timeout every time you run the tests.
+
