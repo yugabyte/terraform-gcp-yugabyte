@@ -1,15 +1,19 @@
-output "ui" {
+output "master-ui" {
   sensitive = false
   value     = "http://${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip}:7000"
 }
-output "ssh_user" {
+output "tserver-ui" {
   sensitive = false
-  value = "${var.ssh_user}"
+  value     = "http://${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip}:9000"
 }
-output "ssh_key" {
-  sensitive = false
-  value     = "${var.ssh_private_key}"
-}
+#output "ssh_user" {
+#  sensitive = false
+#  value = "${var.ssh_user}"
+#}
+#output "ssh_key" {
+#  sensitive = false
+#  value     = "${var.ssh_private_key}"
+#}
 
 output "JDBC" {
   sensitive =false
@@ -29,4 +33,12 @@ output "YCQL"{
 output "YEDIS"{
   sensitive = false
   value     = "redis-cli -h ${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip} -p 6379"
+}
+
+output "instance-ip"{
+  value = "${google_compute_instance.yugabyte_node.*.network_interface.0.access_config.0.nat_ip}"
+}
+
+output "hosts"{
+  value = "${google_compute_instance.yugabyte_node.*.name}"
 }
