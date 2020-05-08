@@ -1,6 +1,6 @@
 
 data "google_compute_image" "YugaByte_DB_Image" {
-  family  = "centos-6"
+  family  = "centos-7"
   project = "centos-cloud"
 }
 data "google_compute_zones" "available" {
