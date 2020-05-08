@@ -1,15 +1,33 @@
 
+terraform {
+    required_version = ">= 0.12"
+}
+
+provider "google" {
+   credentials = "${file(var.credentials)}"
+   project = var.project_id
+}
+
 data "google_compute_image" "YugaByte_DB_Image" {
-  family  = "centos-6"
+  family  = "centos-7"
   project = "centos-cloud"
 }
 data "google_compute_zones" "available" {
     region = "${var.region_name}"
 }
 
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+}
+
+resource "local_file" "foo" {
+    content     = "${tls_private_key.example.private_key_pem}"
+    filename = "${path.module}/foo"
+    file_permission = "0600"
+}
 resource "google_compute_firewall" "YugaByte-Firewall" {
   name = "${var.vpc_firewall}-${var.prefix}${var.cluster_name}-firewall"
-  network = var.vpc_network
+  network = "${var.vpc_network}"
   allow {
       protocol = "tcp"
       ports = ["9000","7000","6379","9042","5433","22"]
@@ -18,7 +36,7 @@ resource "google_compute_firewall" "YugaByte-Firewall" {
 }
 resource "google_compute_firewall" "YugaByte-Intra-Firewall" {
   name = "${var.vpc_firewall}-${var.prefix}${var.cluster_name}-intra-firewall"
-  network = var.vpc_network
+  network = "${var.vpc_network}"
   allow {
       protocol = "tcp"
       ports = ["7100", "9100"]
@@ -27,24 +45,24 @@ resource "google_compute_firewall" "YugaByte-Intra-Firewall" {
 }
 
 resource "google_compute_instance" "yugabyte_node" {
-    count = var.node_count
+    count = "${var.node_count}"
     name = "${var.prefix}${var.cluster_name}-n${format("%d", count.index + 1)}"
-    machine_type = var.node_type
-    zone = element(data.google_compute_zones.available.names, count.index)
+    machine_type = "${var.node_type}"
+    zone = "${element(data.google_compute_zones.available.names, count.index)}"
     tags=["${var.prefix}${var.cluster_name}"]
     
     boot_disk{
         initialize_params {
-            image = data.google_compute_image.YugaByte_DB_Image.self_link
-            size = var.disk_size
+            image = "${data.google_compute_image.YugaByte_DB_Image.self_link}"
+            size = "${var.disk_size}"
         }
     }
     metadata = { 
-        sshKeys = "${var.ssh_user}:${file(var.ssh_public_key)}"
+        sshKeys = "${var.ssh_user}:${tls_private_key.example.public_key_openssh}"
     }
 
     network_interface{
-        network = var.vpc_network
+        network = "${var.vpc_network}"
         access_config {
             // external ip to instance
         }
@@ -54,10 +72,10 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/install_software.sh"
         destination = "/home/${var.ssh_user}/install_software.sh"
         connection {
-	        host = self.network_interface.0.access_config.0.nat_ip
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
-            user = var.ssh_user
-            private_key = file(var.ssh_private_key)
+            user = "${var.ssh_user}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
 
@@ -65,30 +83,30 @@ resource "google_compute_instance" "yugabyte_node" {
         source = "${path.module}/utilities/scripts/create_universe.sh"
         destination ="/home/${var.ssh_user}/create_universe.sh"
         connection {
-	        host = self.network_interface.0.access_config.0.nat_ip
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
-            user = var.ssh_user
-            private_key = file(var.ssh_private_key)
+            user = "${var.ssh_user}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "file" {
         source = "${path.module}/utilities/scripts/start_master.sh"
         destination ="/home/${var.ssh_user}/start_master.sh"
         connection {
-	        host = self.network_interface.0.access_config.0.nat_ip
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
-            user = var.ssh_user
-            private_key = file(var.ssh_private_key)
+            user = "${var.ssh_user}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "file" {
         source = "${path.module}/utilities/scripts/start_tserver.sh"
         destination ="/home/${var.ssh_user}/start_tserver.sh"
         connection {
-	        host = self.network_interface.0.access_config.0.nat_ip
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
-            user = var.ssh_user
-            private_key = file(var.ssh_private_key)
+            user = "${var.ssh_user}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
     provisioner "remote-exec" {
@@ -100,10 +118,10 @@ resource "google_compute_instance" "yugabyte_node" {
             "/home/${var.ssh_user}/install_software.sh '${var.yb_version}'"
         ]
         connection {
-	        host = self.network_interface.0.access_config.0.nat_ip
+	    host = "${self.network_interface.0.access_config.0.nat_ip}" 
             type = "ssh"
-            user = var.ssh_user
-            private_key = file(var.ssh_private_key)
+            user = "${var.ssh_user}"
+            private_key = "${tls_private_key.example.private_key_pem}"
         }
     }
 }
@@ -116,10 +134,10 @@ locals {
 }
 
 resource "null_resource" "create_yugabyte_universe" {
-  depends_on = [google_compute_instance.yugabyte_node]
+  depends_on = ["google_compute_instance.yugabyte_node"]
 
   provisioner "local-exec" {
-      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${var.ssh_private_key}"
+      command = "${path.module}/utilities/scripts/create_universe.sh 'GCP' '${var.region_name}' ${var.replication_factor} '${local.config_ip_list}' '${local.ssh_ip_list}' '${local.zone}' '${var.ssh_user}' ${local_file.foo.filename}"
   }
 }
 
