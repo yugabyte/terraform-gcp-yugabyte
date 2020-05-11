@@ -112,7 +112,7 @@ locals {
     depends_on = ["google_compute_instance.yugabyte_node"]
     ssh_ip_list = "${var.use_public_ip_for_ssh == "true" ? join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.access_config.0.nat_ip) : join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.network_ip)}"
     config_ip_list = "${join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.network_ip)}"
-    zone = "${join(" ", distinct(google_compute_instance.yugabyte_node.*.zone))}"
+    zone = "${join(" ", google_compute_instance.yugabyte_node.*.zone)}"
 }
 
 resource "null_resource" "create_yugabyte_universe" {
