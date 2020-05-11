@@ -32,14 +32,14 @@ resource "google_compute_instance" "yugabyte_node" {
     machine_type = var.node_type
     zone = element(data.google_compute_zones.available.names, count.index)
     tags=["${var.prefix}${var.cluster_name}"]
-    
+
     boot_disk{
         initialize_params {
             image = data.google_compute_image.YugaByte_DB_Image.self_link
             size = var.disk_size
         }
     }
-    metadata = { 
+    metadata = {
         sshKeys = "${var.ssh_user}:${file(var.ssh_public_key)}"
     }
 
@@ -112,7 +112,7 @@ locals {
     depends_on = ["google_compute_instance.yugabyte_node"]
     ssh_ip_list = "${var.use_public_ip_for_ssh == "true" ? join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.access_config.0.nat_ip) : join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.network_ip)}"
     config_ip_list = "${join(" ",google_compute_instance.yugabyte_node.*.network_interface.0.network_ip)}"
-    zone = "${join(" ", google_compute_instance.yugabyte_node.*.zone)}"
+    zone = "${join(" ", distinct(google_compute_instance.yugabyte_node.*.zone))}"
 }
 
 resource "null_resource" "create_yugabyte_universe" {
