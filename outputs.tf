@@ -13,17 +13,17 @@ output "ssh_key" {
 
 output "JDBC" {
   sensitive =false
-  value     = "postgresql://postgres@${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip}:5433"
+  value     = "postgresql://yugabyte@${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip}:5433"
 }
 
 output "YSQL"{
   sensitive = false
-  value     = "psql -U postgres -h ${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip} -p 5433"
+  value     = "ysqlsh -U yugabyte -h ${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip} -p 5433"
 }
 
 output "YCQL"{
   sensitive = false
-  value     = "cqlsh ${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip} 9042"
+  value     = "ycqlsh ${google_compute_instance.yugabyte_node.0.network_interface.0.access_config.0.nat_ip} 9042"
 }
 
 output "YEDIS"{
