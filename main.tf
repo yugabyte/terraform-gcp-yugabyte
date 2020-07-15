@@ -116,6 +116,11 @@ locals {
 }
 
 resource "null_resource" "create_yugabyte_universe" {
+  # Define the trigger condition to run the provisioner block
+  triggers = {
+    cluster_instance_ids = "${join(",", google_compute_instance.yugabyte_node.*.id)}"
+  }
+
   depends_on = [google_compute_instance.yugabyte_node]
 
   provisioner "local-exec" {
