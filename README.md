@@ -1,5 +1,5 @@
 # terraform-gcp-yugabyte
-A Terraform module to deploy and run YugaByte on Google Cloud.
+A Terraform module to deploy and run YugabyteDB on Google Cloud.
 
 ## Config
 * First create a terraform file with provider details 
